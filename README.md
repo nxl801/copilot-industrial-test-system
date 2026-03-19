@@ -1,5 +1,9 @@
 # copilot-industrial-test-system
 
+[![Release](https://img.shields.io/github/v/release/nxl801/copilot-industrial-test-system)](https://github.com/nxl801/copilot-industrial-test-system/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![Repo Status](https://img.shields.io/badge/status-demo--safe-blue)](./SECURITY.md)
+
 A public-ready template repository for building GitHub Copilot multi-agent workflows for industrial automation testing.
 
 It provides:

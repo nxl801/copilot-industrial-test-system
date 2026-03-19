@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security concern
+    url: https://github.com/nxl801/copilot-industrial-test-system/security/policy
+    about: Please use the security policy for risky defaults, dangerous tool exposure, or unsafe workflow concerns.
