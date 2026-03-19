@@ -1,0 +1,2 @@
+timestamp,station,action,expected,actual,artifact
+2026-03-19T12:35:00+08:00,bench-a01,collect-baseline,baseline logs and params captured,placeholder,artifacts/evidence/baseline_capture.md

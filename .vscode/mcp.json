@@ -1,0 +1,32 @@
+{
+  "servers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/mcp-server-playwright"]
+    },
+    "labctl": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["tools/mcp/labctl/server.py"],
+      "sandboxEnabled": true,
+      "sandbox": {
+        "filesystem": {
+          "allowWrite": ["${workspaceFolder}/artifacts"]
+        },
+        "network": {
+          "allowedDomains": ["lab-api.example", "bench-gateway.example"]
+        }
+      }
+    },
+    "scanparse": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["tools/mcp/scanparse/server.py"]
+    },
+    "testmgmt": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["tools/mcp/testmgmt/server.py"]
+    }
+  }
+}

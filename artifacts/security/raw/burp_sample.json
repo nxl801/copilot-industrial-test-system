@@ -1,0 +1,3 @@
+[
+  {"target":"plc-web-ui","protocol":"https","cwe":"CWE-798","summary":"Default credential still enabled"}
+]

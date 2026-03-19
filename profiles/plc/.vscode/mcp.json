@@ -1,0 +1,24 @@
+{
+  "servers": {
+    "labctl": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["tools/mcp/labctl/server.py"]
+    },
+    "plcctl": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["tools/mcp/plcctl/server.py"]
+    },
+    "motionctl": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["tools/mcp/motionctl/server.py"]
+    },
+    "testmgmt": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["tools/mcp/testmgmt/server.py"]
+    }
+  }
+}

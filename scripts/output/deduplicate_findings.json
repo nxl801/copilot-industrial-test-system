@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "server": "scanparse",
+  "tool": "deduplicate_findings",
+  "timestamp": "2026-03-19T06:36:37.410100+00:00",
+  "inputs": {
+    "paths": [
+      "artifacts/security/raw/burp_sample.json"
+    ]
+  },
+  "artifacts": [
+    "artifacts/findings/normalized_from_stub.json"
+  ],
+  "warnings": [
+    "stub dedup"
+  ],
+  "result": {
+    "normalized_file": "artifacts/findings/normalized_from_stub.json",
+    "dedup_rule": "target+protocol+cwe+summary",
+    "status": "generated"
+  }
+}

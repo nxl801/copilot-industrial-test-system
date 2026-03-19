@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-03-19T12:35:00+08:00",
+  "source_runs": [
+    "artifacts/security/nessus_run_001.nessus",
+    "artifacts/security/burp_scan_001.json",
+    "artifacts/security/defensics_run_001.xml"
+  ],
+  "items": [
+    {
+      "id": "F-001",
+      "domain": "security",
+      "tool": "nessus",
+      "target": "plc-web-ui",
+      "protocol": "https",
+      "cwe": "CWE-798",
+      "summary": "Default credential still enabled on maintenance endpoint",
+      "reachability": "lab-only",
+      "industrial_impact": "high",
+      "status": "open",
+      "evidence": [
+        "artifacts/evidence/security/default_credential_check.md"
+      ]
+    }
+  ]
+}

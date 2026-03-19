@@ -1,0 +1,13 @@
+{
+  "tool": "import_burp",
+  "source": "artifacts/security/raw/burp_sample.json",
+  "imported": true,
+  "items": [
+    {
+      "target": "plc-web-ui",
+      "protocol": "https",
+      "cwe": "CWE-798",
+      "summary": "Default credential still enabled"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "normalized_file": "artifacts/findings/normalized_from_stub.json",
+  "dedup_rule": "target+protocol+cwe+summary",
+  "status": "generated"
+}

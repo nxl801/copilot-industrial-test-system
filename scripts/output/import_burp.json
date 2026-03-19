@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "server": "scanparse",
+  "tool": "import_burp",
+  "timestamp": "2026-03-19T06:36:37.378911+00:00",
+  "inputs": {
+    "path": "artifacts/security/raw/burp_sample.json"
+  },
+  "artifacts": [
+    "artifacts/findings/import_burp.json"
+  ],
+  "warnings": [
+    "stub parser"
+  ],
+  "result": {
+    "tool": "import_burp",
+    "source": "artifacts/security/raw/burp_sample.json",
+    "imported": true,
+    "items": [
+      {
+        "target": "plc-web-ui",
+        "protocol": "https",
+        "cwe": "CWE-798",
+        "summary": "Default credential still enabled"
+      }
+    ]
+  }
+}

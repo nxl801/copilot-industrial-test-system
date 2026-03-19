@@ -1,0 +1,10 @@
+{
+  "station_id": "bench-a01",
+  "alarms": [
+    {
+      "code": "A-101",
+      "level": "warning",
+      "message": "Demo alarm log entry"
+    }
+  ]
+}

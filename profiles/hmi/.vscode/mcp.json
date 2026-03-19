@@ -1,0 +1,18 @@
+{
+  "servers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/mcp-server-playwright"]
+    },
+    "scanparse": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["tools/mcp/scanparse/server.py"]
+    },
+    "testmgmt": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["tools/mcp/testmgmt/server.py"]
+    }
+  }
+}

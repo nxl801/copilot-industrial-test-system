@@ -1,0 +1,10 @@
+{
+  "chat.agent.enabled": true,
+  "github.copilot.chat.cli.customAgents.enabled": true,
+  "chat.useCustomizationsInParentRepositories": true,
+  "chat.agentFilesLocations": ["../copilot-shared/agents"],
+  "chat.agentSkillsLocations": ["../copilot-shared/skills"],
+  "chat.useCustomAgentHooks": true,
+  "github.copilot.chat.organizationCustomAgents.enabled": true,
+  "github.copilot.chat.organizationInstructions.enabled": true
+}

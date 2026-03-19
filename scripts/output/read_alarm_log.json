@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "server": "labctl",
+  "tool": "read_alarm_log",
+  "timestamp": "2026-03-19T06:36:37.348000+00:00",
+  "inputs": {
+    "station_id": "bench-a01"
+  },
+  "artifacts": [
+    "artifacts/evidence/bench_output/alarm_log.json"
+  ],
+  "warnings": [
+    "stub mode"
+  ],
+  "result": {
+    "station_id": "bench-a01",
+    "alarms": [
+      {
+        "code": "A-101",
+        "level": "warning",
+        "message": "Demo alarm log entry"
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "station_id": "bench-a01",
+  "operator": "demo",
+  "ttl_minutes": 30,
+  "locked_at": "2026-03-19T06:36:37.292653+00:00",
+  "lock_id": "lock-bench-a01"
+}

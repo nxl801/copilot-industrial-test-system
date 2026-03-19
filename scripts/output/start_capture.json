@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "server": "labctl",
+  "tool": "start_capture",
+  "timestamp": "2026-03-19T06:36:37.319443+00:00",
+  "inputs": {
+    "channels": [
+      "log",
+      "trace"
+    ]
+  },
+  "artifacts": [
+    "artifacts/evidence/bench_output/start_capture.json"
+  ],
+  "warnings": [
+    "stub mode"
+  ],
+  "result": {
+    "capture_id": "capture-001",
+    "channels": [
+      "log",
+      "trace"
+    ],
+    "status": "started"
+  }
+}
