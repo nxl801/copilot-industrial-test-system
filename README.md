@@ -6,6 +6,8 @@
 
 A public-ready template repository for building GitHub Copilot multi-agent workflows for industrial automation testing.
 
+中文说明见：[`README.zh-CN.md`](./README.zh-CN.md)
+
 It provides:
 - a full multi-agent project skeleton
 - HMI / PLC / Security profile packs
