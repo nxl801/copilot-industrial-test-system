@@ -1,0 +1,32 @@
+# Starter schema for normalized testcase records
+testcase_id: PLC_COM_TC_001
+requirement_id: PLC_COM_001
+product_type: plc
+module: communication
+testcase_title: Unsupported Modbus function code rejection
+objective: Verify that unsupported Modbus function codes are rejected and an error is logged.
+preconditions:
+  - PLC powered on
+  - Modbus TCP enabled
+  - test client connected
+test_steps:
+  - send unsupported Modbus function code
+  - observe controller response
+  - query diagnostic log
+expected_result:
+  - request is rejected
+  - exception or error response is returned
+  - diagnostic log contains corresponding event
+priority: P1
+required_observability:
+  - protocol_response
+  - device_log
+evidence_needed:
+  - request packet
+  - response packet
+  - log export
+safety_sensitive: false
+requires_real_hardware: false
+requires_visual_confirmation: false
+traceability:
+  - spec section 4.2.3

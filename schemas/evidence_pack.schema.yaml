@@ -1,0 +1,20 @@
+# Starter schema for testcase evidence packs
+testcase_id: PLC_COM_TC_001
+required_logs:
+  - device diagnostic log export
+required_screenshots: []
+required_packets:
+  - request capture
+  - response capture
+required_device_values:
+  - status snapshot after test
+required_operator_notes: []
+pass_fail_criteria:
+  - unsupported request is rejected
+  - expected error indication is recorded
+  - diagnostic log shows corresponding entry
+defect_attachment_recommendation:
+  - packet capture
+  - log export
+  - testcase execution summary
+report_summary_template: Unsupported function code request was issued and the controller response plus diagnostic logging behavior were verified.

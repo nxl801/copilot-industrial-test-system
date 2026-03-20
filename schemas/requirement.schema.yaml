@@ -1,0 +1,14 @@
+# Starter schema for normalized requirement records
+requirement_id: PLC_COM_001
+source_section: 4.2.3
+requirement_summary: PLC shall reject invalid Modbus function codes
+requirement_text: The controller shall reject unsupported Modbus function codes and log an error event.
+category: interface_communication
+observability:
+  - modbus_response
+  - diagnostic_log
+needs_clarification: false
+ambiguity_reason: ""
+notes_for_testing:
+  - test supported and unsupported function code handling
+inferred_assumptions: []
