@@ -12,6 +12,8 @@ It provides:
 - a full multi-agent project skeleton
 - HMI / PLC / Security profile packs
 - advanced prompt packs
+- protocol capability pack skeletons for HMI / PLC / Modbus / OPC UA
+- governance, schema, and workflow starters for testcase engineering
 - MCP stub servers and demo-safe examples
 - report, evidence, and validation templates
 - minimal runnable demos
@@ -37,14 +39,15 @@ This repository is intentionally conservative:
 
 - `.github/` — shared Copilot instructions, agents, skills
 - `.vscode/` — VS Code settings and MCP configuration
-- `prompts/` — reusable prompt packs
+- `prompts/` — reusable prompt packs and protocol capability packs
 - `plans/` — sample plans
 - `reports/` — shared report templates
+- `schemas/` — starter structures for requirements, testcases, evidence, and coverage
 - `tools/mcp/` — demo-safe MCP stubs
 - `profiles/` — HMI / PLC / Security slim packs
 - `artifacts/` — example evidence / findings / logs
 - `scripts/` — validation and demo helpers
-- `docs/` — rollout, packaging, validation, and public release docs
+- `docs/` — rollout, packaging, validation, migration, governance, workflows, and public release docs
 
 ## Quick start
 
@@ -65,6 +68,15 @@ This repository is intentionally conservative:
    python3 scripts/check_dangerous_tool_exposure.py
    python3 scripts/check_insufficient_evidence_rule.py
    ```
+
+## Fusion track additions
+
+This branch also introduces the first fusion layer from the earlier `industrial-copilot-template` work:
+- `docs/governance/` for testcase naming and dedup rules
+- `docs/workflows/` for the spec -> requirement -> testcase chain, parallel generation, and automation triage
+- `docs/migration/` for source-to-target merge planning
+- `prompts/protocols/` for HMI / PLC / Modbus / OPC UA capability packs
+- `schemas/` for starter requirement, testcase, evidence, and coverage structures
 
 ## Public publishing note
 
