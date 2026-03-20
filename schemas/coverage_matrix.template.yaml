@@ -1,0 +1,43 @@
+# Starter template for requirement-to-testcase coverage audits
+campaign_id: sample_campaign
+product_type: plc
+subsystem: communication
+requirements:
+  - requirement_id: PLC_COM_001
+    covered: true
+    testcase_ids:
+      - PLC_COM_TC_001
+      - PLC_COM_TC_002
+    coverage:
+      positive: true
+      negative: true
+      boundary: true
+      recovery: false
+      security_permission: false
+      observability: true
+    notes:
+      - recovery coverage still needed if reconnect behavior is required by spec
+  - requirement_id: PLC_COM_002
+    covered: false
+    testcase_ids: []
+    coverage:
+      positive: false
+      negative: false
+      boundary: false
+      recovery: false
+      security_permission: false
+      observability: false
+    notes:
+      - missing testcase generation
+removed_duplicates:
+  - kept: PLC_COM_TC_002
+    removed:
+      - PLC_COM_TC_009
+    reason: materially equivalent objective and expected result
+coverage_gaps:
+  - requirement_id: PLC_COM_002
+    gap: no testcase coverage
+  - requirement_id: PLC_COM_001
+    gap: no recovery testcase yet
+recommend_follow_up:
+  - run recovery-robustness subagent for communication reconnect requirements
