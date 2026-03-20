@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-mkdir -p artifacts/security/raw artifacts/evidence/bench_output artifacts/findings reports
+mkdir -p scripts/output artifacts/security/raw artifacts/evidence/bench_output artifacts/findings reports
 
 cat > artifacts/security/raw/burp_sample.json <<'JSON'
 [
