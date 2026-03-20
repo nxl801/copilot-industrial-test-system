@@ -30,6 +30,8 @@ This document tracks what has already landed on the fusion branch and what remai
 - added `prompts/protocols/plc/README.md`
 - added `prompts/protocols/modbus/README.md`
 - added `prompts/protocols/opcua/README.md`
+- deepened HMI with a requirement-to-testcases contract and example flow
+- deepened PLC with a requirement-to-testcases contract and example flow
 - deepened Modbus with prompt contracts and example flow
 - deepened OPC UA with prompt contracts and example flow
 

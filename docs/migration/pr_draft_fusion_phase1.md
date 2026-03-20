@@ -55,6 +55,12 @@ This PR starts closing that gap without weakening the repository's safety postur
 
 ### Capability packs
 - add HMI / PLC / Modbus / OPC UA capability-pack READMEs
+- deepen HMI with:
+  - requirement-to-testcases prompt contract
+  - example flow
+- deepen PLC with:
+  - requirement-to-testcases prompt contract
+  - example flow
 - deepen Modbus with:
   - requirement-to-testcases prompt contract
   - testcase-to-pytest prompt contract
