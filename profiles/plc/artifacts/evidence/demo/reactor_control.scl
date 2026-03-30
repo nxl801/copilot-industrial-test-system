@@ -1,0 +1,246 @@
+// ============================================================================
+// 反应釜主控逻辑 — Reactor Main Sequence Control (SCL / Structured Text)
+// ============================================================================
+// Product Family : Demo-PLC-Reactor
+// Build ID       : demo-reactor-v0.1
+// Author         : (Demo for tutorial purposes)
+// Description    : 反应釜状态机 + 搅拌联锁 + 模式切换
+//                  ⚠️ 本文件包含故意留下的缺陷，供教学分析使用
+// ============================================================================
+
+TYPE E_ReactorMode :
+(
+    MODE_IDLE       := 0,
+    MODE_MANUAL     := 1,
+    MODE_AUTO       := 2,
+    MODE_AUTO_RUN   := 3,
+    MODE_FAULT      := 10,
+    MODE_FAULT_RECV := 11,
+    MODE_ESTOP      := 99
+);
+END_TYPE
+
+FUNCTION_BLOCK FB_ReactorControl
+VAR_INPUT
+    Mode_Request        : E_ReactorMode;    // 来自 HMI 的模式切换请求
+    Run_Cmd             : BOOL;             // 自动运行启动命令
+    Agitator_Start_Cmd  : BOOL;             // 搅拌电机启动命令
+    Drain_Valve_Cmd     : BOOL;             // 排污阀开启命令
+    EStop_Reset         : BOOL;             // 急停复位信号
+    Fault_Ack           : BOOL;             // 故障确认信号
+    Safety_OK           : BOOL;             // 安全链状态
+    Drain_Valve_FB      : BOOL;             // 排污阀位置反馈 (TRUE = 开到位)
+    Agitator_Running_FB : BOOL;             // 搅拌电机运行反馈
+    Tank_Temp           : REAL;             // 釜内温度
+    Tank_Pressure       : REAL;             // 釜内压力
+END_VAR
+
+VAR_OUTPUT
+    Mode_Current        : E_ReactorMode;    // 当前模式
+    Agitator_Enable     : BOOL;             // 搅拌电机使能输出
+    Drain_Valve_Open    : BOOL;             // 排污阀控制输出
+    ALM_Interlock       : BOOL;             // 联锁触发报警
+    ALM_ModeReject      : BOOL;             // 模式切换被拒报警
+    ALM_Overtemp        : BOOL;             // 超温报警
+END_VAR
+
+VAR
+    State               : E_ReactorMode := MODE_IDLE;
+    Inhibits_Agitator   : BOOL;             // 搅拌抑制寄存器
+    Fault_Code          : INT;
+    Fault_Active        : BOOL;
+    tmr_FaultTimeout    : TON;              // 故障超时定时器
+    tmr_StartupDelay    : TON;              // 启动延迟定时器
+END_VAR
+
+VAR RETAIN
+    Last_Mode           : E_ReactorMode;    // 掉电前模式 (retentive)
+    EStop_Latched       : BOOL;             // 急停锁存 (retentive)
+END_VAR
+
+// ============================================================================
+// 主状态机
+// ============================================================================
+
+// --- 急停优先处理 (最高优先级) ---
+IF NOT Safety_OK THEN
+    State := MODE_ESTOP;
+    Agitator_Enable := FALSE;
+    Drain_Valve_Open := FALSE;
+    EStop_Latched := TRUE;
+    // 所有输出立即去能
+END_IF;
+
+CASE State OF
+
+    // ----------------------------------------------------------------
+    // IDLE: 上电初始状态
+    // ----------------------------------------------------------------
+    MODE_IDLE:
+        Agitator_Enable := FALSE;
+        Drain_Valve_Open := FALSE;
+        tmr_StartupDelay(IN := TRUE, PT := T#3S);
+        IF tmr_StartupDelay.Q THEN
+            State := MODE_MANUAL;
+            tmr_StartupDelay(IN := FALSE);
+        END_IF;
+
+    // ----------------------------------------------------------------
+    // MANUAL: 手动模式
+    // ----------------------------------------------------------------
+    MODE_MANUAL:
+        // 手动模式下逐个控制
+        IF Agitator_Start_Cmd AND Safety_OK AND NOT Drain_Valve_FB THEN
+            Agitator_Enable := TRUE;
+        ELSIF NOT Agitator_Start_Cmd THEN
+            Agitator_Enable := FALSE;
+        END_IF;
+
+        IF Drain_Valve_Cmd AND NOT Agitator_Running_FB THEN
+            Drain_Valve_Open := TRUE;
+        ELSIF NOT Drain_Valve_Cmd THEN
+            Drain_Valve_Open := FALSE;
+        END_IF;
+
+        // ---- 切换到 AUTO ----
+        IF Mode_Request = MODE_AUTO THEN
+            IF Safety_OK
+               AND NOT Fault_Active
+               AND NOT Drain_Valve_FB   // ✅ 检查排污阀关闭
+            THEN
+                State := MODE_AUTO;
+                Agitator_Enable := FALSE;
+                ALM_ModeReject := FALSE;
+            ELSE
+                ALM_ModeReject := TRUE;  // 条件不满足，拒绝切换
+            END_IF;
+        END_IF;
+
+    // ----------------------------------------------------------------
+    // AUTO: 自动待机
+    // ----------------------------------------------------------------
+    MODE_AUTO:
+        IF Run_Cmd AND Safety_OK THEN
+            State := MODE_AUTO_RUN;
+        END_IF;
+
+        IF Mode_Request = MODE_MANUAL THEN
+            State := MODE_MANUAL;
+            Agitator_Enable := FALSE;
+        END_IF;
+
+    // ----------------------------------------------------------------
+    // AUTO_RUN: 自动运行（反应进行中）
+    // ----------------------------------------------------------------
+    MODE_AUTO_RUN:
+        // --- 搅拌控制 + 联锁检查 ---
+        Inhibits_Agitator := Drain_Valve_FB;   // 排污阀开 → 抑制搅拌
+
+        IF Agitator_Start_Cmd AND NOT Inhibits_Agitator AND Safety_OK THEN
+            Agitator_Enable := TRUE;
+        END_IF;
+
+        // ⚠️ 缺陷: 排污阀在运行中被打开时，是否立即停搅拌？
+        // 当前逻辑只在启动时检查 Inhibits_Agitator，
+        // 运行中如果排污阀突然打开，Agitator_Enable 不会被自动清除
+        // （除非下一次 Agitator_Start_Cmd 重新评估）
+
+        // --- 排污阀控制（⚠️ 缺少反向互锁） ---
+        IF Drain_Valve_Cmd THEN
+            Drain_Valve_Open := TRUE;
+            // ⚠️ 缺陷: 未检查 Agitator_Running_FB
+            // 应该在搅拌运行时禁止打开排污阀
+        ELSIF NOT Drain_Valve_Cmd THEN
+            Drain_Valve_Open := FALSE;
+        END_IF;
+
+        // --- 超温保护 ---
+        IF Tank_Temp > 150.0 THEN
+            ALM_Overtemp := TRUE;
+            Fault_Code := 1001;
+            Fault_Active := TRUE;
+            State := MODE_FAULT;
+        END_IF;
+
+        // 返回手动
+        IF Mode_Request = MODE_MANUAL THEN
+            State := MODE_MANUAL;
+            Agitator_Enable := FALSE;
+        END_IF;
+
+    // ----------------------------------------------------------------
+    // FAULT: 故障状态
+    // ----------------------------------------------------------------
+    MODE_FAULT:
+        Agitator_Enable := FALSE;
+        Drain_Valve_Open := FALSE;
+        Inhibits_Agitator := TRUE;  // 故障时锁定抑制寄存器
+
+        tmr_FaultTimeout(IN := TRUE, PT := T#30S);
+        IF tmr_FaultTimeout.Q AND NOT Fault_Ack THEN
+            // 30秒无人确认 → 升级为需要完全复位
+            Fault_Code := 9999;
+        END_IF;
+
+        IF Fault_Ack THEN
+            State := MODE_FAULT_RECV;
+            tmr_FaultTimeout(IN := FALSE);
+        END_IF;
+
+    // ----------------------------------------------------------------
+    // FAULT_RECOVERY: 故障恢复
+    // ----------------------------------------------------------------
+    MODE_FAULT_RECV:
+        Fault_Active := FALSE;
+        ALM_Overtemp := FALSE;
+
+        // ⚠️⚠️⚠️ 关键缺陷（教案核心演示点）⚠️⚠️⚠️
+        // 从 Fault_Recovery 切换回 Auto 时：
+        // 仅检查了 Safety_OK，但 **遗漏了对 Inhibits_Agitator 寄存器的重校验**！
+        // 如果操作员在排污阀开启时按下复位键，系统将允许进入 Auto，
+        // 搅拌机可能在排污阀开启状态下被启动。
+        //
+        // 正确实现应包含: AND NOT Drain_Valve_FB AND NOT Inhibits_Agitator
+        IF Mode_Request = MODE_AUTO THEN
+            IF Safety_OK THEN                       // ← 缺少: AND NOT Drain_Valve_FB
+                State := MODE_AUTO;                 // ← 缺少: AND NOT Inhibits_Agitator
+                // ⚠️ Inhibits_Agitator 未被清零！在 FAULT 中被设为 TRUE，
+                // 进入 AUTO 后如果代码依赖此寄存器，行为将不确定
+            ELSE
+                ALM_ModeReject := TRUE;
+            END_IF;
+        END_IF;
+
+        IF Mode_Request = MODE_MANUAL THEN
+            State := MODE_MANUAL;
+            Inhibits_Agitator := FALSE;  // 手动模式清零
+        END_IF;
+
+    // ----------------------------------------------------------------
+    // ESTOP: 急停状态
+    // ----------------------------------------------------------------
+    MODE_ESTOP:
+        Agitator_Enable := FALSE;
+        Drain_Valve_Open := FALSE;
+        Inhibits_Agitator := TRUE;
+
+        IF EStop_Reset AND Safety_OK THEN
+            EStop_Latched := FALSE;
+            State := MODE_MANUAL;       // 急停复位必须先回到手动
+            Inhibits_Agitator := FALSE;
+        END_IF;
+
+END_CASE;
+
+// --- 更新输出 ---
+Mode_Current := State;
+Last_Mode := State;
+
+// --- 联锁报警输出 ---
+IF Inhibits_Agitator AND Agitator_Start_Cmd THEN
+    ALM_Interlock := TRUE;
+ELSE
+    ALM_Interlock := FALSE;
+END_IF;
+
+END_FUNCTION_BLOCK
